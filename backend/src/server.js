@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 // dotenv.config({ quiet: true });
 import { ENV } from "./lib/env.js";
 import authRoutes from "./routes/auth.route.js";
@@ -19,6 +20,7 @@ const __dirname = path.resolve();
 const port = ENV.PORT || 3000;
 
 app.use(express.json()); // for parsing application/json middleware under req.body
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);

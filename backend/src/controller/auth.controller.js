@@ -4,6 +4,8 @@ import { generateToken } from "../lib/utils.jwt.js";
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 // import "dotenv/config";
 import { ENV } from "../lib/env.js";
+// import cloudinary from "../lib/cloudinary.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   //   res.send("signup end point ");
@@ -122,4 +124,33 @@ export const login = async (req, res) => {
 export const logout = async (_, res) => {
   res.cookie("jwt", "", { maxAge: 0 });
   res.status(200).json({ message: "User logged out successfully" });
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const profilePic = req.body;
+    if (!profilePic)
+      return res.status(400).json({ message: "profilepic required" });
+    const userId = req.user._id;
+    const uplioadResponse = await cloudinary.uploader.upload(profilePic);
+
+    const upadateUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: uplioadResponse.secure_url },
+      { new: true },
+    );
+
+    res.status(200).json({ message: "Profile updated successfully" });
+
+    // const user = await User.findById(userId);
+    // if (!user) return res.status(404).json({ message: "User not found" });
+    // user.profilePic = uplioadResponse.secure_url;
+    // await user.save();
+    // res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    console.log("error in updateProfile controller", error);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
 };
