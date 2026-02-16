@@ -19,7 +19,7 @@ const __dirname = path.resolve();
 
 const port = ENV.PORT || 3000;
 
-app.use(express.json()); // for parsing application/json middleware under req.body
+app.use(express.json()); // for parsing application/json middleware under req.body this doesn't allowed more than 50 kb so we update limint 5mb
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
