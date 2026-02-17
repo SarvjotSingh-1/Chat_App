@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import path from "path";
 import { connectDB } from "./lib/db.js";
+import cors from "cors";
 
 // import ENV from "dotenv";
 // import { ENV } from "./lib/env.js";
@@ -18,7 +19,7 @@ const app = express();
 const __dirname = path.resolve();
 
 const port = ENV.PORT || 3000;
-
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(express.json()); // for parsing application/json middleware under req.body this doesn't allowed more than 50 kb so we update limint 5mb
 app.use(cookieParser());
 
