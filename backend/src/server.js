@@ -20,8 +20,10 @@ const __dirname = path.resolve();
 
 const port = ENV.PORT || 3000;
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
-app.use(express.json()); // for parsing application/json middleware under req.body this doesn't allowed more than 50 kb so we update limint 5mb
+// app.use(express.json()); // for parsing application/json middleware under req.body this doesn't allowed more than 50 kb so we update limint 5mb
 app.use(cookieParser());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);

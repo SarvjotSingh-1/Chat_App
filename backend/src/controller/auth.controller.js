@@ -126,31 +126,58 @@ export const logout = async (_, res) => {
   res.status(200).json({ message: "User logged out successfully" });
 };
 
+// export const updateProfile = async (req, res) => {
+//   try {
+//     const profilePic = req.body;
+//     if (!profilePic)
+//       return res.status(400).json({ message: "profilepic required" });
+//     const userId = req.user._id;
+//     const uplioadResponse = await cloudinary.uploader.upload(profilePic);
+
+//     const upadateUser = await User.findByIdAndUpdate(
+//       userId,
+//       { profilePic: uplioadResponse.secure_url },
+//       { new: true },
+//     );
+
+//     res.status(200).json({ message: "Profile updated successfully" });
+
+//     // const user = await User.findById(userId);
+//     // if (!user) return res.status(404).json({ message: "User not found" });
+//     // user.profilePic = uplioadResponse.secure_url;
+//     // await user.save();
+//     // res.status(200).json({ message: "Profile updated successfully" });
+//   } catch (error) {
+//     console.log("error in updateProfile controller", error);
+//     res
+//       .status(500)
+//       .json({ message: "Internal Server Error", error: error.message });
+//   }
+// };
+
+
+
 export const updateProfile = async (req, res) => {
   try {
-    const profilePic = req.body;
-    if (!profilePic)
-      return res.status(400).json({ message: "profilepic required" });
-    const userId = req.user._id;
-    const uplioadResponse = await cloudinary.uploader.upload(profilePic);
+    const file = req.file;
 
-    const upadateUser = await User.findByIdAndUpdate(
-      userId,
-      { profilePic: uplioadResponse.secure_url },
-      { new: true },
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const uploadResponse = await cloudinary.uploader.upload(
+      `data:${file.mimetype};base64,${file.buffer.toString("base64")}`
     );
 
-    res.status(200).json({ message: "Profile updated successfully" });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { profilePic: uploadResponse.secure_url },
+      { new: true }
+    );
 
-    // const user = await User.findById(userId);
-    // if (!user) return res.status(404).json({ message: "User not found" });
-    // user.profilePic = uplioadResponse.secure_url;
-    // await user.save();
-    // res.status(200).json({ message: "Profile updated successfully" });
+    res.json(updatedUser);
   } catch (error) {
     console.log("error in updateProfile controller", error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
